@@ -1,0 +1,1 @@
+export { getPopularMovies } from './tmdbService';
