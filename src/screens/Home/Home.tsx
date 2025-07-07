@@ -1,10 +1,14 @@
-import { useEffect, useRef } from 'react';
-import { View, Text, Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { View, Text, Dimensions, StyleSheet, TouchableOpacity, useColorScheme, Image } from 'react-native';
 import { getPopularMovies } from '../../utils'
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
 
 export const HomeScreen = () => {
+
+  const [topImages, setTopImages] = useState([]);
+
+  console.log('topImages', topImages);
 
   const data = [...new Array(6).keys()];
   const width = Dimensions.get("window").width;
@@ -13,45 +17,50 @@ export const HomeScreen = () => {
   const progress = useSharedValue<number>(0);
 
   useEffect(() => {
-    getPopularMovies().then(data => {
-      console.log('data', data);
+    getPopularMovies().then(response => {
+      const movies = response?.map((item: any) => ({
+        posterPath: `https://image.tmdb.org/t/p/w500${item.poster_path}`
+      }))
+      setTopImages(movies);
     })
   }, [])
 
   return (
-    <View>
-      <View>
-        <Text>My List</Text>
-        <Text>Discover</Text>
-      </View>
+   <View>
       <Carousel
         ref={ref}
         width={width}
-        height={width / 2}
-        data={data}
+        height={width * 1.5}
+        data={topImages}
+        autoPlay
         onProgressChange={progress}
         renderItem={({ index }) => (
-          <View
-            style={{
-              flex: 1,
-              borderWidth: 1,
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ textAlign: "center", fontSize: 30 }}>{index}</Text>
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image} 
+              source={{
+                uri: topImages[index].posterPath
+              }} 
+            />
           </View>
         )}
       />
-      <View style={styles.buttonSection}>
-        <TouchableOpacity style={styles.buttonWishList}>
-          <Text style={styles.textWishList}>+ WishList</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.buttonDetail}
-        >
-          <Text style={styles.textDetails}>Details</Text>
-        </TouchableOpacity>
-    </View>
+      <View style={styles.overlayContainer}>
+        <View style={ styles.titleSection }>
+          <Text style={ styles.textDesc }>My List</Text>
+          <Text style={ styles.textDesc }>Discover</Text>
+        </View>
+        <View style={ styles.buttonSection }>
+          <TouchableOpacity style={styles.buttonWishList}>
+            <Text style={styles.textWishList}>+ WishList</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.buttonDetail}
+          >
+            <Text style={styles.textDetails}>Details</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   )
 }
@@ -100,6 +109,11 @@ const styles = StyleSheet.create({
         borderRadius: 13,
         alignItems: 'center',
     },
+    imageContainer: {
+      flex: 1,
+      borderWidth: 1,
+      justifyContent: "center",
+    },
     image: {
         width: '100%',
         height: '100%',
@@ -121,3 +135,4 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
 });
+
