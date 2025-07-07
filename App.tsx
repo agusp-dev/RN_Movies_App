@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, StatusBar, useColorScheme, View } from 'react-native';
+import { useColorScheme, View } from 'react-native';
 import { HomeScreen } from './src/screens';
 
 function App() {
@@ -7,13 +7,11 @@ function App() {
   const backgroundColor = isDarkMode ? 'light-content' : 'dark-content'
 
   return (
-    <SafeAreaView style={{ backgroundColor }}>
-      <StatusBar barStyle={ backgroundColor } />
-      <ScrollView contentInsetAdjustmentBehavior='automatic' />
+    <View style={{ backgroundColor }}>
       <View>
         <HomeScreen />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
